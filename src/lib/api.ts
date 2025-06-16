@@ -39,12 +39,25 @@ export async function fetchNotes(
   return data.filter((item) => typeof item.id === 'string');
 }
 
-export async function createNote(data: Omit<Note, 'id' | 'createdAt'>): Promise<Note> {
+export async function createNote(data: {
+  title: string;
+  content: string;
+}): Promise<Note> {
+  const payload = {
+    ...data,
+    createdAt: new Date().toISOString()
+  };
+
   const res = await fetch(BASE_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+    body: JSON.stringify(payload)
   });
+
+  if (!res.ok) {
+    throw new Error(`Failed to create note: ${res.status}`);
+  }
+
   return res.json();
 }
 
