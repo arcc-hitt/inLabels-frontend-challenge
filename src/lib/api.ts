@@ -3,6 +3,7 @@ export interface Note {
   title: string;
   content: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 const BASE_URL = 'https://684ed832f0c9c9848d294907.mockapi.io/notes';
@@ -61,11 +62,18 @@ export async function createNote(data: {
   return res.json();
 }
 
-export async function updateNote(id: string, data: Partial<Note>): Promise<Note> {
+export async function updateNote(
+  id: string,
+  data: { title: string; content: string }
+): Promise<Note> {
+  const payload = {
+    ...data,
+    updatedAt: new Date().toISOString()
+  };
   const res = await fetch(`${BASE_URL}/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+    body: JSON.stringify(payload)
   });
   return res.json();
 }

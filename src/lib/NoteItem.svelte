@@ -31,9 +31,14 @@
         {note.title}
     </h2>
     <p class="text-gray-700 dark:text-gray-300">{note.content}</p>
-    <small class="text-gray-500 dark:text-gray-400">
-        {new Date(note.createdAt).toLocaleString()}
-    </small>
+    <div class="flex flex-col text-sm text-gray-500 dark:text-gray-400">
+    <span>Created: {new Date(note.createdAt).toLocaleString()}</span>
+    {#if note.updatedAt}
+      <span class="text-xs text-gray-600 dark:text-gray-500">
+        Edited: {new Date(note.updatedAt).toLocaleString()}
+      </span>
+    {/if}
+  </div>
     <div class="mt-2 space-x-2">
         <button
             on:click={() => (editing = true)}
