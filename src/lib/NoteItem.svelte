@@ -26,17 +26,25 @@
     }
 </script>
 
-<div class="bg-white p-4 rounded shadow">
-    <h2 class="text-black font-semibold">{note.title}</h2>
-    <p class="text-gray-700">{note.content}</p>
-    <small class="text-gray-400">
+<div class="bg-white dark:bg-gray-800 p-4 rounded shadow space-y-2">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        {note.title}
+    </h2>
+    <p class="text-gray-700 dark:text-gray-300">{note.content}</p>
+    <small class="text-gray-500 dark:text-gray-400">
         {new Date(note.createdAt).toLocaleString()}
     </small>
     <div class="mt-2 space-x-2">
-        <button on:click={() => (editing = true)} class="text-blue-500">
+        <button
+            on:click={() => (editing = true)}
+            class="text-blue-600 hover:text-blue-800"
+        >
             Edit
         </button>
-        <button on:click={() => (confirming = true)} class="text-red-500">
+        <button
+            on:click={() => (confirming = true)}
+            class="text-red-600 hover:text-red-800"
+        >
             Delete
         </button>
     </div>
