@@ -4,6 +4,19 @@
   import NoteList from './lib/NoteList.svelte';
   import type { Note } from './lib/api';
   import { fetchNotes, createNote, deleteNote, updateNote } from './lib/api';
+    import { theme, type Theme } from './lib/theme';
+
+  function nextTheme() {
+    theme.update((t) =>
+      t === 'system' ? 'dark' : t === 'dark' ? 'light' : 'system'
+    );
+  }
+
+  const labels: Record<Theme, string> = {
+    system: 'System',
+    dark: 'Dark',
+    light: 'Light'
+  };
 
   let notes: Note[] = [];
   let page = 1;
@@ -55,6 +68,15 @@
   <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100">
     Notes
   </h1>
+
+  <div class="flex justify-end mb-4">
+    <button
+      on:click={nextTheme}
+      class="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+    >
+      Theme: {labels[$theme]}
+    </button>
+  </div>
 
   <!-- Search & Sort Controls -->
   <div class="flex flex-col md:flex-row md:items-end md:space-x-4 space-y-4 md:space-y-0">
