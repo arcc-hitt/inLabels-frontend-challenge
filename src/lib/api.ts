@@ -10,23 +10,33 @@ const BASE_URL = 'https://684ed832f0c9c9848d294907.mockapi.io/notes';
 export async function fetchNotes(
   page = 1,
   limit = 10,
-  sortBy = 'createdAt',
+  sortBy: 'createdAt' | 'title' = 'createdAt',
   order: 'asc' | 'desc' = 'desc',
   search = ''
 ): Promise<Note[]> {
-  const query = new URLSearchParams({
+  const q = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
     sortBy,
-    order,
+    order
   });
 
   if (search) {
-    query.append('title', `~${search}`);
+    q.append('search', search);
   }
 
-  const res = await fetch(`${BASE_URL}?${query.toString()}`);
-  return res.json();
+  const url = `${BASE_URL}?${q.toString()}`;
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    console.warn(`fetchNotes() got ${res.status} from ${url}`);
+    return [];
+  }
+
+  const data = await res.json();
+  // Ensure we return an array of objects with defined .id
+  if (!Array.isArray(data)) return [];
+  return data.filter((item) => typeof item.id === 'string');
 }
 
 export async function createNote(data: Omit<Note, 'id' | 'createdAt'>): Promise<Note> {
