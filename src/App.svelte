@@ -85,10 +85,11 @@
   <!-- Search & Sort Controls -->
   <div class="space-y-4 md:flex md:items-end md:space-x-4 md:space-y-0">
     <div class="flex-1">
-      <label class="block mb-1 text-gray-700 dark:text-gray-300">
+      <label for="searchInput" class="block mb-1 text-gray-700 dark:text-gray-300">
         Search by Title
       </label>
       <input
+        id="searchInput"
         type="text"
         bind:value={search}
         placeholder="Search..."
@@ -98,10 +99,11 @@
 
     <div class="flex flex-row space-x-4 justify-between">
       <div>
-        <label class="block mb-1 text-gray-700 dark:text-gray-300">
+        <label for="sortBySelect" class="block mb-1 text-gray-700 dark:text-gray-300">
           Sort By
         </label>
         <select
+          id="sortBySelect"
           bind:value={sortBy}
           class="p-2 border border-gray-300 dark:border-gray-700 rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
         >
@@ -110,10 +112,11 @@
         </select>
       </div>
       <div>
-        <label class="block mb-1 text-gray-700 dark:text-gray-300">
+        <label for="orderSelect" class="block mb-1 text-gray-700 dark:text-gray-300">
           Order
         </label>
         <select
+          id="orderSelect"
           bind:value={order}
           class="p-2 border border-gray-300 dark:border-gray-700 rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
         >
