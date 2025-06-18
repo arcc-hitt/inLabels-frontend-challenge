@@ -51,7 +51,10 @@
   }
 
   function handleUpdate(detail: Note) {
-    updateNote(detail.id, { title: detail.title, content: detail.content }).then(loadNotes);
+    updateNote(detail.id, {
+      title: detail.title,
+      content: detail.content,
+    }).then(loadNotes);
   }
 
   // Pagination controls
@@ -64,10 +67,8 @@
   }
 </script>
 
-<main class="max-w-3xl mx-auto p-4 space-y-6">
-  <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100">
-    Notes
-  </h1>
+<main class="max-w-3xl mx-auto p-4 md:p-6 space-y-6">
+  <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100">Notes</h1>
 
   <div class="flex justify-end mb-4">
     <button
@@ -78,41 +79,50 @@
     </button>
   </div>
 
+  <!-- New Note Form -->
+  <NoteForm on:create={(e) => handleCreate(e.detail)} />
+
   <!-- Search & Sort Controls -->
-  <div class="flex flex-col md:flex-row md:items-end md:space-x-4 space-y-4 md:space-y-0">
+  <div class="space-y-4 md:flex md:items-end md:space-x-4 md:space-y-0">
     <div class="flex-1">
-      <label class="block mb-1 text-gray-700 dark:text-gray-300">Search by Title</label>
+      <label class="block mb-1 text-gray-700 dark:text-gray-300">
+        Search by Title
+      </label>
       <input
         type="text"
         bind:value={search}
         placeholder="Search..."
-        class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+        class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
       />
     </div>
-    <div>
-      <label class="block mb-1 text-gray-700 dark:text-gray-300">Sort By</label>
-      <select
-        bind:value={sortBy}
-        class="p-2 border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-      >
-        <option value="createdAt">Created At</option>
-        <option value="title">Title</option>
-      </select>
-    </div>
-    <div>
-      <label class="block mb-1 text-gray-700 dark:text-gray-300">Order</label>
-      <select
-        bind:value={order}
-        class="p-2 border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-      >
-        <option value="desc">Descending</option>
-        <option value="asc">Ascending</option>
-      </select>
+
+    <div class="flex flex-row space-x-4 justify-between">
+      <div>
+        <label class="block mb-1 text-gray-700 dark:text-gray-300">
+          Sort By
+        </label>
+        <select
+          bind:value={sortBy}
+          class="p-2 border border-gray-300 dark:border-gray-700 rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+        >
+          <option value="createdAt">Created At</option>
+          <option value="title">Title</option>
+        </select>
+      </div>
+      <div>
+        <label class="block mb-1 text-gray-700 dark:text-gray-300">
+          Order
+        </label>
+        <select
+          bind:value={order}
+          class="p-2 border border-gray-300 dark:border-gray-700 rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+        >
+          <option value="desc">Descending</option>
+          <option value="asc">Ascending</option>
+        </select>
+      </div>
     </div>
   </div>
-
-  <!-- New Note Form -->
-  <NoteForm on:create={(e) => handleCreate(e.detail)} />
 
   <!-- Notes List -->
   <NoteList
@@ -130,7 +140,7 @@
     >
       Previous
     </button>
-    <span class="text-gray-900 dark:text-gray-100">Page {page}</span>
+    <span class="text-gray-900 dark:text-gray-100">Page {page} of {Math.ceil(notes.length / limit)}</span>
     <button
       on:click={nextPage}
       class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 disabled:opacity-50"
