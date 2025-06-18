@@ -26,7 +26,7 @@
     }
 </script>
 
-<div class="bg-white dark:bg-gray-800 p-4 rounded shadow space-y-2">
+<div class="bg-white dark:bg-gray-800 p-4 rounded shadow space-y-2 flex flex-col justify-between h-full">
     <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
         {note.title}
     </h2>
@@ -39,7 +39,7 @@
       </span>
     {/if}
   </div>
-    <div class="mt-2 space-x-2">
+    <div class="mt-2 flex space-x-2 text-sm">
         <button
             on:click={() => (editing = true)}
             class="text-blue-600 hover:text-blue-800"

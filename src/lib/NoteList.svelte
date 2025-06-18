@@ -24,7 +24,7 @@
     No notes available.
   </p>
 {:else}
-  <div class="grid gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     {#each notes as note (note.id)}
       <NoteItem
         {note}
