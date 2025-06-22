@@ -14,14 +14,12 @@
     let confirming = false;
 
     async function remove() {
-        await deleteNote(note.id);
         dispatch("delete", note.id);
         confirming = false;
     }
 
     async function save(updated: { title: string; content: string }) {
-        const updatedNote = await updateNote(note.id, updated);
-        dispatch("update", updatedNote);
+        dispatch("update", { ...note, ...updated });
         editing = false;
     }
 </script>
