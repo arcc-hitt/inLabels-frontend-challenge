@@ -8,6 +8,14 @@ export interface Note {
 
 const BASE_URL = 'https://684ed832f0c9c9848d294907.mockapi.io/notes';
 
+async function handleResponse<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`API ${res.status}: ${err}`);
+  }
+  return (await res.json()) as T;
+}
+
 export async function fetchNotes(
   page = 1,
   limit = 10,
@@ -19,25 +27,14 @@ export async function fetchNotes(
     page: page.toString(),
     limit: limit.toString(),
     sortBy,
-    order
+    order,
   });
-
   if (search) {
     q.append('search', search);
   }
-
-  const url = `${BASE_URL}?${q.toString()}`;
+  const url = `${BASE_URL}?${q}`;
   const res = await fetch(url);
-
-  if (!res.ok) {
-    console.warn(`fetchNotes() got ${res.status} from ${url}`);
-    return [];
-  }
-
-  const data = await res.json();
-  // Ensure we return an array of objects with defined .id
-  if (!Array.isArray(data)) return [];
-  return data.filter((item) => typeof item.id === 'string');
+  return handleResponse<Note[]>(res);
 }
 
 export async function createNote(data: {
@@ -54,12 +51,7 @@ export async function createNote(data: {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   });
-
-  if (!res.ok) {
-    throw new Error(`Failed to create note: ${res.status}`);
-  }
-
-  return res.json();
+  return handleResponse<Note>(res);
 }
 
 export async function updateNote(
@@ -75,9 +67,17 @@ export async function updateNote(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   });
-  return res.json();
+  return handleResponse<Note>(res);
 }
 
 export async function deleteNote(id: string): Promise<void> {
-  await fetch(`${BASE_URL}/${id}`, { method: 'DELETE' });
+  const res = await fetch(`${BASE_URL}/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
+}
+
+export async function fetchTotalCount(): Promise<number> {
+  const res = await fetch(BASE_URL);
+  if (!res.ok) return 0;
+  const data = await res.json();
+  return Array.isArray(data) ? data.length : 0;
 }
