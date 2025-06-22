@@ -3,7 +3,7 @@
   import NoteForm from './lib/NoteForm.svelte';
   import NoteList from './lib/NoteList.svelte';
   import type { Note } from './lib/api';
-  import { fetchNotes, createNote, deleteNote, updateNote } from './lib/api';
+  import { fetchNotes, fetchTotalCount, createNote, deleteNote, updateNote } from './lib/api';
     import { theme, type Theme } from './lib/theme';
 
   function nextTheme() {
@@ -19,15 +19,33 @@
   };
 
   let notes: Note[] = [];
+  let totalCount = 0;
   let page = 1;
   const limit = 10;
   let sortBy: 'createdAt' | 'title' = 'createdAt';
   let order: 'asc' | 'desc' = 'desc';
   let search = '';
+  let loading = false;
+  let error: string | null = null;
+
+  $: totalPages = Math.max(1, Math.ceil(totalCount / limit));
 
   // Load notes from the API
-  async function loadNotes() {
-    notes = await fetchNotes(page, limit, sortBy, order, search);
+    async function loadNotes() {
+    loading = true;
+    error = null;
+    try {
+      const [fetched, count] = await Promise.all([
+        fetchNotes(page, limit, sortBy, order, search),
+        fetchTotalCount()
+      ]);
+      notes = fetched;
+      totalCount = count;
+    } catch (e: any) {
+      error = e.message;
+    } finally {
+      loading = false;
+    }
   }
 
   // Initial load
@@ -43,18 +61,19 @@
     createNote(detail).then(() => {
       page = 1;
       loadNotes();
-    });
+    })
+    .catch((e) => (error = e.message));
   }
 
   function handleDelete(id: string) {
-    deleteNote(id).then(loadNotes);
+    deleteNote(id).then(loadNotes).catch((e) => (error = e.message));
   }
 
   function handleUpdate(detail: Note) {
     updateNote(detail.id, {
       title: detail.title,
       content: detail.content,
-    }).then(loadNotes);
+    }).then(loadNotes).catch((e) => (error = e.message));
   }
 
   // Pagination controls
@@ -69,6 +88,10 @@
 
 <main class="max-w-3xl mx-auto p-4 md:p-6 space-y-6">
   <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100">Notes</h1>
+
+  {#if error}
+    <div class="text-red-600">Error: {error}</div>
+  {/if}
 
   <div class="flex justify-end mb-4">
     <button
@@ -128,11 +151,15 @@
   </div>
 
   <!-- Notes List -->
-  <NoteList
-    {notes}
-    on:delete={(e) => handleDelete(e.detail)}
-    on:update={(e) => handleUpdate(e.detail)}
-  />
+  {#if loading}
+    <div>Loading notes…</div>
+  {:else}
+    <NoteList
+      {notes}
+      on:update={(e) => handleUpdate(e.detail)}
+      on:delete={(e) => handleDelete(e.detail)}
+    />
+  {/if}
 
   <!-- Pagination -->
   <div class="flex justify-between items-center">
@@ -143,11 +170,11 @@
     >
       Previous
     </button>
-    <span class="text-gray-900 dark:text-gray-100">Page {page} of {Math.ceil(notes.length / limit)}</span>
+    <span class="text-gray-900 dark:text-gray-100">Page {page} of {totalPages}</span>
     <button
       on:click={nextPage}
       class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 disabled:opacity-50"
-      disabled={notes.length < limit}
+      disabled={page === totalPages || notes.length < limit}
     >
       Next
     </button>
