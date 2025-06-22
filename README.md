@@ -1,47 +1,127 @@
-# Svelte + TS + Vite
+## Svelte Notes App
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+A simple, responsive note-taking web application built with **Svelte**, **TypeScript**, **Vite**, and **Tailwind CSS**. It interacts with a MockAPI backend to **view**, **create**, **update**, and **delete** notes. Additional features include:
 
-## Recommended IDE Setup
+* **Pagination** (10 notes per page)
+* **Sorting** (by creation date or title, ascending/descending)
+* **Search** (filter notes by title)
+* **Confirmation modal** for deletes
+* **Light/Dark theme toggle** (system default, manual override)
+* **Form validation** with inline error messages
+* **Backdrop blur** modals
+* **Responsive layout** (mobile→desktop)
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+✅ **Deployed at:** https://in-labels-frontend-challenge.vercel.app/
 
-## Need an official Svelte framework?
+---
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
 
-## Technical considerations
+### 🚀 Features
 
-**Why use this over SvelteKit?**
+1. **Display Notes**
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+   * Fetches from `GET /notes` on load and on any filter/sort/page change.
+2. **Create Note**
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+   * Validated form (`title`, `content`) with inline errors.
+   * Sends `POST /notes` with client-generated `createdAt`.
+3. **Edit Note**
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+   * “Edit” button opens a blurred-backdrop modal.
+   * Validated inline, sends `PUT /notes/:id` with `updatedAt`.
+4. **Delete Note**
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
+   * “Delete” button opens a confirmation modal.
+   * Sends `DELETE /notes/:id`, handles missing IDs gracefully.
+5. **Pagination**
 
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
+   * 10 notes per page; shows “Page X of Y.”
+6. **Sorting & Search**
 
-**Why include `.vscode/extensions.json`?**
+   * Sort by `createdAt` or `title`, asc/desc.
+   * Fuzzy search via MockAPI’s `search` param.
+7. **Theme Toggle**
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+   * System preference by default; cycles between “System ⇄ Dark ⇄ Light.”
+   * Persists in `localStorage`.
+8. **Responsive Design**
 
-**Why enable `allowJs` in the TS template?**
+   * Single-column mobile layout; two-column grid on `md+`.
+   * Adaptive padding/margins across breakpoints.
 
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
+---
 
-**Why is HMR not preserving my local component state?**
+### 🛠 Tech Stack
 
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
+* **Svelte** + **TypeScript**
+* **Vite** (dev server & bundler)
+* **Tailwind CSS v4** (utility-first styling, dark-mode via media + class)
+* **Fetch API** for HTTP
+* **MockAPI.io** for fake REST endpoints
 
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
+---
 
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
+### 🔧 Prerequisites
+
+* Node.js ≥ 16
+* NPM or Yarn
+
+---
+
+### 💻 Getting Started
+
+1. **Clone & install**
+
+   ```bash
+   git clone https://github.com/arcc-hitt/inLabels-frontend-challenge.git
+   cd inLabels-frontend-challenge
+   npm install
+   ```
+
+2. **Configure your MockAPI endpoint**
+
+   * Sign up at [https://mockapi.io](https://mockapi.io)
+   * Create a “notes” resource with fields:
+
+     * `title` (String)
+     * `content` (String)
+     * `createdAt` (Date Time)
+     * `updatedAt` (Date Time)
+   * Copy your base URL and update `BASE_URL` in `src/lib/api.ts`.
+
+3. **Run dev server**
+
+   ```bash
+   npm run dev
+   ```
+
+   Visit [http://localhost:5173](http://localhost:5173).
+
+4. **Build for production**
+
+   ```bash
+   npm run build
+   npm run preview
+   ```
+
+---
+
+### 🎯 Trade-offs & Assumptions
+
+* **Client-generated timestamps** ensure accurate creation/edit times, rather than Faker’s random dates.
+* **Synchronous reload** after each mutation (no optimistic UI) for simplicity and correctness.
+* **Single-component state** in `App.svelte` rather than external stores, to keep it approachable.
+* **Error handling** centralized via a small helper to avoid repetition.
+
+---
+
+### 📊 Future Improvements
+
+* **Optimistic updates** with rollback on failure for snappier UX.
+* **Infinite scroll** in place of pagination.
+* **Debounced search** to reduce network calls.
+* **User authentication** and per-user note ownership.
+* **Tagging/Categorization** and bulk-delete actions.
+* **Unit/Integration tests** (e.g. with Vitest & Playwright).
+
+---
